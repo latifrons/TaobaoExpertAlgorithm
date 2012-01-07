@@ -7,20 +7,21 @@ namespace TaobaoExpert
 {
 	public class Result
 	{
-		private HashSet<SellerCity> sellers;
+		// Fields (5) 
+
 		private string algorithmName;
-
-		public override string ToString()
-		{
-			return string.Format("AlgorithmName: {0},  Sellers: {1},  Cost: {2}",algorithmName, sellers.Count , cost);
-		}
-
 		private int cost;
+		private HashSet<SellerCity> sellers;
+		private long treecost;
+		private HashSet<int> uniqSellers = new HashSet<int>();
+		private long time;
 
-		public HashSet<SellerCity> Sellers
+		// Properties (4) 
+
+		public string AlgorithmName
 		{
-			get { return sellers; }
-			set { sellers = value; }
+			get { return algorithmName; }
+			set { algorithmName = value; }
 		}
 
 		public int Cost
@@ -29,10 +30,51 @@ namespace TaobaoExpert
 			set { cost = value; }
 		}
 
-		public string AlgorithmName
+		public HashSet<SellerCity> Sellers
 		{
-			get { return algorithmName; }
-			set { algorithmName = value; }
+			get { return sellers; }
+			set
+			{
+				sellers = value;
+				GetUniqSeller();
+			}
+		}
+
+		public long Treecost
+		{
+			get { return treecost; }
+			set { treecost = value; }
+		}
+
+		public HashSet<int> UniqSellers
+		{
+			get { return uniqSellers; }
+			set { uniqSellers = value; }
+		}
+
+		public long Time
+		{
+			get { return time; }
+			set { time = value; }
+		}
+
+		// Methods (2) 
+
+		// Public Methods (1) 
+
+		public override string ToString()
+		{
+			return string.Format("AlgorithmName: {0},  Sellers: {1},  Unique Sellers: {2},  Cost: {3},  TreeCost: {4}", algorithmName, sellers.Count,UniqSellers.Count, cost,treecost);
+		}
+		// Private Methods (1) 
+
+		private void GetUniqSeller()
+		{
+			UniqSellers.Clear();
+			foreach (SellerCity sc in sellers)
+			{
+				UniqSellers.Add(sc.SellerID);
+			}
 		}
 	}
 

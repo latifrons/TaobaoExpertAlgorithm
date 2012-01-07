@@ -12,28 +12,35 @@ namespace TaobaoExpert
 		Random r = new Random(1);
 		public AlgCoverSteiner(List<Item> items) : base(items)
 		{
-			this.algorithmName = "CoverSteiner";
+			this.AlgorithmName = "CoverSteiner";
 		}
 
 		public override Result DoAlg(List<long> requestItems)
 		{
+			long start = Environment.TickCount;
 			//greedycover
 			HashSet<SellerCity> x0 = GreedyCover(new HashSet<long>(requestItems));
 			//steinertree
-			HashSet<SellerCity> x_ = SteinerTree(x0);
+			long a;
+			HashSet<SellerCity> x_ = SteinerTree(x0,out a);
+			long end = Environment.TickCount;
 			//calculate cost
 			int cost = CalcCost(x_);
 			return new Result
 			{
 				Cost = cost,
 				Sellers = x_,
-				AlgorithmName = this.algorithmName
+				AlgorithmName = this.AlgorithmName,
+				Treecost = a,
+				Time = end-start
 			};
 
 		}
 
-		private HashSet<SellerCity> SteinerTree(HashSet<SellerCity> x0)
+		private HashSet<SellerCity> SteinerTree(HashSet<SellerCity> x0, out long treecost)
 		{
+			HashSet<Tuple<SellerCity, SellerCity>> connection = new HashSet<Tuple<SellerCity, SellerCity>>();
+			treecost = 0;
 			HashSet<SellerCity> xSteiner = new HashSet<SellerCity>(sellerCities);
 			xSteiner.ExceptWith(x0);
 
@@ -43,6 +50,7 @@ namespace TaobaoExpert
 			xSteinerExcept.ExceptWith(x_);
 			while (xSteinerExcept.Count != 0)
 			{
+//				Console.WriteLine(xSteinerExcept.Count);
 				int minDistance = int.MaxValue;
 				SellerCity v = null;
 				foreach (SellerCity sc in xSteinerExcept)
@@ -60,6 +68,15 @@ namespace TaobaoExpert
 				{
 					x_.Add(p);
 					x_.Add(v);
+					//connection cost
+					var t1 = new Tuple<SellerCity, SellerCity>(p,v);
+					var t2 = new Tuple<SellerCity, SellerCity>(v, p);
+					if (!connection.Contains(t1) && !connection.Contains(t2))
+					{
+						connection.Add(t1);
+						connection.Add(t2);
+						treecost += GetDistance(v,p);
+					}
 				}
 				else
 				{

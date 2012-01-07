@@ -10,7 +10,7 @@ namespace TaobaoExpert
 {
 	abstract class Alg
 	{
-		protected string algorithmName;
+		private string algorithmName;
 		protected HashSet<Item> items;
 		protected HashSet<SellerCity> sellerCities;
 		//sellertaobaoid, location -> uniqid/taobaoid
@@ -32,32 +32,70 @@ namespace TaobaoExpert
 				maps2.Add(id, t);
 			}
 		}
+
+		public string AlgorithmName
+		{
+			get { return algorithmName; }
+			set { algorithmName = value; }
+		}
+
 		public abstract Result DoAlg(List<long> requestItems);
 
+		public bool Verify(HashSet<long> requestItems,Result r)
+		{
+			bool success = true;
+			//every item has its seller
+			foreach (long item in requestItems)
+			{
+				var scs = maps2[item];
+				HashSet<SellerCity> rs = new HashSet<SellerCity>(r.Sellers);
+				rs.IntersectWith(scs);
+				if (rs.Count == 0)
+				{
+					Console.WriteLine("Item failed {0}",item);
+					success = false;
+				}
+			}
+			//every seller sells at least one item
+			foreach (SellerCity sc in r.Sellers)
+			{
+				HashSet<long> sells = new HashSet<long>(maps[sc]);
+				sells.IntersectWith(requestItems);
+				if (sells.Count == 0)
+				{
+					Console.WriteLine("Seller failed {0}",sc);
+					success = false;
+				}
+			}
+			return success;
+		}
 		public int CalcCost(HashSet<SellerCity> ss)
 		{
 			int dis = 0;
-			StringBuilder sb = new StringBuilder();
+//			StringBuilder sb = new StringBuilder();
 			foreach (SellerCity s1 in ss)
 			{
 				foreach (SellerCity s2 in ss)
 				{
 					if (s1 != s2)
 					{
-						sb.Append(s1).Append(' ');
-						sb.Append(s2).Append(' ');
-						sb.Append(GetDistance(s1, s2)).Append('\n');
+//						sb.Append(s1).Append(' ');
+//						sb.Append(s2).Append(' ');
+//						sb.Append(GetDistance(s1, s2)).Append('\n');
 						dis += GetDistance(s1, s2);
 					}
 				}
 			}
-			File.AppendAllText("a.txt", sb.ToString());
+//			File.AppendAllText("a.txt", sb.ToString());
 			return dis / 2;
 		}
 
 		public int GetDistance(SellerCity s1, SellerCity s2)
 		{
-			if (s1.SellerID == s2.SellerID)
+			if (s1 == s2)
+			{
+				return 0;
+			}else if (s1.SellerID == s2.SellerID)
 			{
 				return Constants.SAME_SELLER_DIFF_CITY;
 			}
@@ -139,6 +177,14 @@ namespace TaobaoExpert
 		public override string ToString()
 		{
 			return t.ToString();
+		}
+		public static bool operator ==(SellerCity a,SellerCity b)
+		{
+			return a.Equals(b);
+		}
+		public static bool operator !=(SellerCity a, SellerCity b)
+		{
+			return !a.Equals(b);
 		}
 	}
 }

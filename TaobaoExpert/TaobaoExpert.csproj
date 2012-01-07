@@ -53,6 +53,7 @@
     <Compile Include="Database.cs" />
     <Compile Include="BLL\OpsItem.cs" />
     <Compile Include="BLL\OpsSeller.cs" />
+    <Compile Include="AlgEnhancedSteiner.cs" />
     <Compile Include="Model\Item.cs" />
     <Compile Include="Model\Seller.cs" />
     <Compile Include="MultiValueDictionary.cs" />

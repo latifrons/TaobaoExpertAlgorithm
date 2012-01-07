@@ -7,7 +7,7 @@ namespace TaobaoExpert
 {
 	class Constants
 	{
-		public const int SAME_SELLER_DIFF_CITY = 2;
-		public const int DIFF_SELLER = 10;
+		public const int SAME_SELLER_DIFF_CITY = 1;
+		public const int DIFF_SELLER = 4;
 	}
 }

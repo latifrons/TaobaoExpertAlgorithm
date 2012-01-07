@@ -11,11 +11,12 @@ namespace TaobaoExpert
 	{
 		public AlgRarestFirst(List<Item> items) : base(items)
 		{
-			this.algorithmName = "RarestFirst";
+			this.AlgorithmName = "RarestFirst";
 		}
 
 		public override Result DoAlg(List<long> requestItems)
 		{
+			long start = Environment.TickCount;
 			List<List<SellerCity>> itemsSellers = new List<List<SellerCity>>();
 			//3 find the minimum List<SellerCity> count
 			int minSize = int.MaxValue;
@@ -64,13 +65,16 @@ namespace TaobaoExpert
 			{
 				ss.Add(GetPath(iStar, maps2[a]));
 			}
+			long end = Environment.TickCount;
 			//calculate cost
 			int cost = CalcCost(ss);
 			return new Result
 			       	{
 			       		Cost = cost,
 						Sellers = ss,
-						AlgorithmName = this.algorithmName
+						AlgorithmName = this.AlgorithmName,
+						Time = end-start,
+						
 			       	};
 		}
 	}
